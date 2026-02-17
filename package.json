@@ -1,31 +1,29 @@
 {
-	"name": "bpb-panel",
-	"version": "5.0.0",
-	"homepage": "https://github.com/bia-pain-bache/BPB-Worker-Panel",
-	"license": "GPL-3.0",
-	"private": true,
-	"type": "module",
-	"scripts": {
-		"check": "tsc --noEmit",
-		"build": "node scripts/build.js"
-	},
-	"devDependencies": {
-		"@eslint/css": "^0.8.1",
-		"@eslint/js": "^9.28.0",
-		"@eslint/markdown": "^6.5.0",
-		"@types/node": "^24.7.2",
-		"eslint": "^9.28.0",
-		"typescript": "^5.9.3"
-	},
-	"dependencies": {
-		"@cloudflare/workers-types": "^4.20251011.0",
-		"esbuild": "^0.25.5",
-		"glob": "^11.0.2",
-		"globals": "^16.2.0",
-		"html-minifier": "^4.0.0",
-		"javascript-obfuscator": "latest",
-		"jose": "^6.0.11",
-		"jszip": "^3.10.1",
-		"terser": "^5.42.0"
-	}
+  "name": "v2ray-worker",
+  "version": "2.4",
+  "author": {
+    "name": "Vahid Farid"
+  },
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "start": "wrangler dev"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240529.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/crypto-js": "^4.2.2",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^20.12.13",
+    "@types/uuid": "^9.0.8",
+    "typescript": "^5.0.4",
+    "wrangler": "^3.57.2"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "buffer": "^6.0.3",
+    "crypto-js": "^4.2.0",
+    "js-yaml": "^4.1.0",
+    "uuid": "^9.0.1"
+  }
 }
