@@ -1,65 +1,51 @@
-name: Build and Release
-
-permissions:
-  contents: write
-
+name: Build worker.js
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 */1 * * *'
+  push:
+    branches: ["main"]
+  release:
+    types: ["published"]
 
 jobs:
   build:
-    if: |
-      github.event_name == 'workflow_dispatch' || 
-      (github.event_name == 'schedule' && github.ref == 'refs/heads/main')
+    permissions:
+      contents: write
+
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "latest"
+        cache: "npm"
 
-      - name: Get release version
-        id: get_version
-        run: echo "version=$(jq -r .version package.json)" >> $GITHUB_OUTPUT
+    - name: Install modules
+      run: npm i wrangler@latest
 
-      - name: Check release version
-        run: echo "Release version is ${{ steps.get_version.outputs.version }}"
+    - name: Build
+      run: npx wrangler build
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "latest"
+    - name: Add Header
+      run: cp ${{ github.workspace }}/dist/worker.js ${{ github.workspace }}/dist/worker-original.js && echo -e "/*!\r\n  * v2ray Subscription Worker (${{ github.sha }})\r\n  * Copyright 2024 Vahid Farid (https://twitter.com/vahidfarid)\r\n  * Licensed under GPLv3 (https://github.com/vfarid/v2ray-worker/blob/main/Licence.md)\r\n  */\r\n" > ${{ github.workspace }}/dist/worker.js && cat ${{ github.workspace }}/dist/worker-original.js >> ${{ github.workspace }}/dist/worker.js
+      
+    - name: Upload to Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: worker
+        path: ${{ github.workspace }}/dist/worker.js
 
-      - name: Install dependencies
-        run: npm install --production
-
-      - name: Type check
-        run: npm run check
-        
-      - name: Build project
-        run: npm run build
-
-      - name: Read release note
-        id: read_release
-        shell: bash
-        run: |
-          r=$(cat RELEASE.md)         
-          r="${r//'%'/'%25'}"                               
-          r="${r//$'\n'/'%0A'}"                             
-          r="${r//$'\r'/'%0D'}"                             
-          echo "RELEASE_BODY=$r" >> $GITHUB_OUTPUT          
-
-      - name: Upload Release Assets
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: dist/*
-          tag: v${{ steps.get_version.outputs.version }}
-          release_name: Release v${{ steps.get_version.outputs.version }}
-          overwrite: true
-          file_glob: true
-          prerelease: ${{ github.ref != 'refs/heads/main' }}
-          promote: ${{ github.ref == 'refs/heads/main' }}
-          make_latest: ${{ github.ref == 'refs/heads/main' }}
-          body: ${{ steps.read_release.outputs.RELEASE_BODY }}
+    - name: Add Release Header
+      run: echo -e "/*!\r\n  * v2ray Subscription Worker ${{ github.event.release.tag_name }}\r\n  * Copyright 2024 Vahid Farid (https://twitter.com/vahidfarid)\r\n  * Licensed under GPLv3 (https://github.com/vfarid/v2ray-worker/blob/main/Licence.md)\r\n  */\r\n" > ${{ github.workspace }}/dist/worker.js && cat ${{ github.workspace }}/dist/worker-original.js >> ${{ github.workspace }}/dist/worker.js
+      
+    - name: Upload to GitHub Release
+      uses: svenstaro/upload-release-action@v2
+      if: github.event_name == 'release'
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ github.workspace }}/dist/worker.js
+        asset_name: worker.js
+        tag: ${{ github.ref }}
+        overwrite: true
