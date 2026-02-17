@@ -43,34 +43,36 @@ export async function GetPanel(request: Request, env: Env): Promise<Response> {
     let htmlMessage = ""
     const message = url.searchParams.get("message")
     if (message == "success") {
-      htmlMessage = `<div class="p-1 bg-success text-white fw-bold text-center">Settings saved successfully.<br/>تنظیمات با موفقیت ذخیره شد.</div>`
+      htmlMessage = `<div class="p-1 bg-success text-white fw-bold text-center">Settings saved successfully.<br/>设置保存成功。</div>`
     } else if (message == "error") {
-      htmlMessage = `<div class="p-1 bg-danger text-white fw-bold text-center">Failed to save settings!<br/>خطا در ذخیره‌ی تنظیمات!</div>`
+      htmlMessage = `<div class="p-1 bg-danger text-white fw-bold text-center">Failed to save settings!<br/>保存设置失败！</div>`
+    } else if (message == "invalid-password") {
+      htmlMessage = `<div class="p-1 bg-danger text-white fw-bold text-center">Invalid password / 密码错误!</div>`
     }
 
     let passwordSection = ""
     if (hash) {
       passwordSection = `
       <div class="mb-3 p-1">
-        <button type="submit" name="reset_password" value="1" class="btn btn-danger">Remove Password / حذف کلمه عبور</button>
+        <button type="submit" name="reset_password" value="1" class="btn btn-danger">Remove Password / 删除密码</button>
       </div>
       `
     } else {
       passwordSection = `
       <div class="mb-1 p-1 pb-0 pt-3 mt-3 border-top border-primary border-4">
-        <label for="configs" class="form-label fw-bold"> Security&nbsp;</label>
+        <label for="configs" class="form-label fw-bold"> Security / 安全设置&nbsp;</label>
       </div>
       <div class="mb-3 p-3 border rounded">
         <label for="password" class="form-label fw-bold">
-          Enter password, if you want to protect panel / در صورتی که میخواهید از پنل محافظت کنید، یک کلمه‌ی عبور وارد کنید:
+          Enter password, if you want to protect panel / 如果您想保护面板，请输入密码：
         </label>
         <input type="password" name="password" class="form-control" id="password" minlength="6"/>
         <div class="form-text">
-          Minimum 6 chars / حداقل ۶ کاراکتر وارد کنید.
+          Minimum 6 chars / 至少 6 个字符。
         </div>
         <p></p>
         <label for="password-confirmation" class="form-label fw-bold">
-          Confirm your password / کلمه عبور را مجددا وارد کنید:
+          Confirm your password / 请再次输入密码：
         </label>
         <input type="password" name="password_confirmation" class="form-control" id="password-confirmation" minlength="6"/>
       </div>
@@ -86,7 +88,7 @@ export async function GetPanel(request: Request, env: Env): Promise<Response> {
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" rel="stylesheet" />
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
       <script>
-        let language = localStorage.getItem("lang") || "fa"
+        let language = localStorage.getItem("lang") || "cn"
         window.addEventListener("load", (event) => {
           initLang();
           setLang(language);
@@ -196,7 +198,10 @@ export async function GetPanel(request: Request, env: Env): Promise<Response> {
           document.getElementById('btn-' + code).classList.add('btn-primary')
           
           for (key in strings[code]) {
-            document.getElementById(key).innerText = strings[code][key]
+            const element = document.getElementById(key);
+            if (element) {
+                element.innerText = strings[code][key];
+            }
           }
       
           language = code
@@ -205,7 +210,7 @@ export async function GetPanel(request: Request, env: Env): Promise<Response> {
     
         const languages = {
           en: {dir: "ltr", end: "right"},
-          fa: {dir: "rtl", end: "left"},
+          cn: {dir: "ltr", end: "right"},
         }
       
         const strings = {
@@ -242,38 +247,38 @@ export async function GetPanel(request: Request, env: Env): Promise<Response> {
             "save-button": "Save",
             "reset-button": "Reset",
           },
-          fa: {
-            "page-title": "پنل کنترل ورکر v2ray",
-            "text-version": "نسخه",
-            "sub-link-title": "لینک ثبت نام شما برای کلاینت‌های v2rayN, v2rayNG, v2rayA, Nekobox, Nekoray, V2Box و...",
-            // "custom-link-title": "لینک ثبت نام شما برای کانفیگ‌های Custom",
-            "clash-link-title": "لینک ثبت نام شما برای کلاینت‌های کلش Clash, ClashX, ClashMeta و...",
-            "includes-title": "کانفیگ‌های اصلی و ترکیبی",
-            "include-merged-configs-title": "کانفیگ‌های ترکیب شده با ورکر را اضافه کن",
-            "include-original-configs-title": "کانفیگ‌های اصلی را اضافه کن",
-            "max-configs-title": "حداکثر تعداد کانفیگ",
-            "protocols-title": "پروتکل‌ها",
-            "clean-ips-title": "آی‌پی تمیز یا ساب‌دامین آی‌پی تمیز",
-            "clean-ips-remarks": "در هر سطر یک آی‌پی یا ساب‌دامین وارد کنید.",
-            "clean-ips-btn-title": "پیدا کردن آی‌پی تمیز",
-            "clean-ips-btn-close-title": "بستن",
-            "alpn-list-title": "لیست ALPN ها",
-            "alpn-list-remarks": "در هر سطر یک آیتم وارد کنید.",
-            "fp-list-title": "لیست فینگرپرینت‌ها",
-            "fp-list-remarks": "در هر سطر یک آیتم وارد کنید.",
-            "providers-title": "تامین کنندگان کانفیگ",
-            "providers-auto-title": "دریافت خودکار از گیت‌هاب",
-            "providers-remarks": "در هر سطر یک لینک وارد کنید (base64, yaml, raw).",
-            "countries-title": "محدود کردن کشور (فقط برای وبسایت‌های پشت شبکه کلادفلر)",
-            "countries-all-title": "در صورت فعال‌سازی این گزینه، تمام پروتکل‌ها بجز پروتکل‌های داخلی ورکر غیرفعال می‌شوند.",
-            "personal-configs-title": "کانفیگ‌های خصوصی",
-            "personal-configs-remarks": "در هر سطر یک کانفیگ وارد کنید.",
-            "block-porn-title": "مسدودسازی پورن",
-            "block-porn-remarks": "در صورت فعال‌سازی این گزینه، همزمان با مسدودسازی پورن تمام پروتکل‌ها بجز vless های داخلی ورکر نیز غیرفعال می‌شوند.",
-            "enable-fragments-title": "فعال‌سازی فرگمنت",
-            "enable-fragments-remarks": "در صورت فعال‌سازی این گزینه، فرگمنت برای تمام کانفیگ‌های TLS با مقادیر اتفاقی فعال می‌شود.",
-            "save-button": "ذخیره",
-            "reset-button": "بازنشانی",
+          cn: {
+            "page-title": "V2Ray Worker 控制面板",
+            "text-version": "版本",
+            "sub-link-title": "您的 v2ray 客户端订阅链接 (v2rayN, v2rayNG, v2rayA, Nekobox, Nekoray, V2Box...)",
+            // "custom-link-title": "您的自定义配置订阅链接",
+            "clash-link-title": "您的 Clash 客户端订阅链接 (Clash, ClashX, ClashMeta...)",
+            "includes-title": "合并和原始配置",
+            "include-merged-configs-title": "包含与 Worker 合并的配置",
+            "include-original-configs-title": "包含原始配置",
+            "max-configs-title": "最大配置数量",
+            "protocols-title": "协议",
+            "clean-ips-title": "优选 IP 或优选子域名",
+            "clean-ips-remarks": "每行一个 IP 或子域名。",
+            "clean-ips-btn-title": "查找优选 IP",
+            "clean-ips-btn-close-title": "关闭",
+            "alpn-list-title": "ALPN 列表",
+            "alpn-list-remarks": "每行一项。",
+            "fp-list-title": "指纹列表",
+            "fp-list-remarks": "每行一项。",
+            "providers-title": "配置提供商",
+            "providers-auto-title": "从 GitHub 自动加载",
+            "providers-remarks": "每行一个链接 (base64, yaml, raw)。",
+            "countries-title": "按国家限制 (仅适用于 Cloudflare 网络后的网站)",
+            "countries-all-title": "如果选中此选项，除内置协议外，所有协议将被停用。",
+            "personal-configs-title": "私有配置",
+            "personal-configs-remarks": "每行一个配置。",
+            "block-porn-title": "拦截色情内容",
+            "block-porn-remarks": "如果选中此选项，将拦截色情网站，并且除内置 vless 协议外，所有协议将被停用。",
+            "enable-fragments-title": "启用碎片化 (Fragment)",
+            "enable-fragments-remarks": "如果选中此选项，将为所有 TLS 配置启用随机值的碎片化。",
+            "save-button": "保存",
+            "reset-button": "重置",
           },
         }
       </script>
@@ -421,8 +426,8 @@ export async function GetPanel(request: Request, env: Env): Promise<Response> {
             
             <svg height="16" aria-hidden="true" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-mark-github v-align-middle color-fg-default">
               <path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path>
-            </svg>
-            <a class="link-dark link-offset-2" href="https://github.com/vfarid" target="_blank">vfarid</a>            </p>
+                </svg>
+                <a class="link-dark link-offset-2" href="https://github.com/vfarid" target="_blank">vfarid</a>            </p>
           </div>
         </div>
       </div>
@@ -495,7 +500,7 @@ export async function GetPanel(request: Request, env: Env): Promise<Response> {
           </div>
         </body>
         <script>
-        let language = localStorage.getItem("lang") || "fa"
+        let language = localStorage.getItem("lang") || "cn"
         window.addEventListener("load", (event) => {
           initLang();
           setLang(language);
@@ -534,7 +539,10 @@ export async function GetPanel(request: Request, env: Env): Promise<Response> {
           document.getElementById('btn-' + code).classList.add('btn-primary')
           
           for (key in strings[code]) {
-            document.getElementById(key).innerText = strings[code][key]
+            const element = document.getElementById(key);
+            if (element) {
+                element.innerText = strings[code][key];
+            }
           }
       
           language = code
@@ -543,7 +551,7 @@ export async function GetPanel(request: Request, env: Env): Promise<Response> {
     
         const languages = {
           en: {dir: "ltr", end: "right"},
-          fa: {dir: "rtl", end: "left"},
+          cn: {dir: "ltr", end: "right"},
         }
       
         const strings = {
@@ -558,16 +566,16 @@ export async function GetPanel(request: Request, env: Env): Promise<Response> {
             "open-kv-text": "Open KV",
             "open-variables-text": "Open Worker's Variables",
           },
-          fa: {
-            "page-title": "پنل کنترل ورکر v2ray",
-            "text-version": "نسخه",
-            "sub-link-title": "لینک ثبت نام شما برای کلاینت‌های v2rayN, v2rayNG, v2rayA, Nekobox, Nekoray, V2Box و...",
-            // "custom-link-title": "لینک ثبت نام شما برای کانفیگ‌های Custom",
-            "clash-link-title": "لینک ثبت نام شما برای کلاینت‌های کلش Clash, ClashX, ClashMeta و...",
-            "you-can-use-your-worker-message": "شما می‌توانید از ورکر خود بدون پنل کنترل استفاده نمایید.",
-            "you-need-namespace-message": "فضای نام settings تعریف نشده است. لطفا مطابق ویدیوی آموزشی، از طریق لینک‌های زیر ابتدا در بخش KV یک فضای نام به اسم settings ایجاد کنید و سپس ازطریق بخش 'KV Namespace Bindings' آن را با همان نام settings به ورکر خود متصل کنید و پس از ذخیره، مجددا پنل را باز کنید.",
-            "open-kv-text": "بازکردن بخش KV",
-            "open-variables-text": "بازکردن بخش متغیرهای ورکر",
+          cn: {
+            "page-title": "V2Ray Worker 控制面板",
+            "text-version": "版本",
+            "sub-link-title": "您的 v2ray 客户端订阅链接 (v2rayN, v2rayNG, v2rayA, Nekobox, Nekoray, V2Box...)",
+            // "custom-link-title": "您的自定义配置订阅链接",
+            "clash-link-title": "您的 Clash 客户端订阅链接 (Clash, ClashX, ClashMeta...)",
+            "you-can-use-your-worker-message": "您可以继续使用您的 Worker 而无需控制面板。",
+            "you-need-namespace-message": "未定义 'settings' 命名空间！请按照视频教程，使用下方链接在您的 Worker 'KV Namespace Bindings' 中定义一个名为 'settings' 的命名空间，然后刷新页面。",
+            "open-kv-text": "打开 KV",
+            "open-variables-text": "打开 Worker 变量",
           },
         }
         </script>
